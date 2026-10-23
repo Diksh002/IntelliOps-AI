@@ -1,286 +1,208 @@
-# DataScout Enterprise Platform
+# IntelliOps AI
 
-> **AI-Powered Multi-Agent Data Analysis Platform**  
-> Version 1.0.0 | Production Ready
+> **Enterprise AI-Powered Multi-Agent Operational Intelligence & Analytics Platform**  
+> Version 1.0.0 | Monorepo Architecture
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
 
-DataScout is an enterprise-grade AI platform that combines multiple specialized agents to provide intelligent data analysis, natural language SQL querying, document search, and dynamic visualization capabilities.
+IntelliOps AI is an enterprise-grade AI platform combining specialized multi-agent orchestration, natural language SQL querying with AST security guardrails, document retrieval (RAG), dynamic data visualization, and an audited machine learning sales data preparation pipeline.
 
 ---
 
-## 🌟 Key Features
+## 🌟 Key Features & Implementation Status
 
-### 🤖 **Multi-Agent Orchestration**
-- **Supervisor Agent**: LangGraph-powered intelligent routing with GPT-4o
-- **SQL Agent**: Natural language to SQL with audit logging
-- **RAG Agent**: PDF document search with Pinecone vector database
-- **Visualizer Agent**: Automatic chart generation from data
+### 🤖 Multi-Agent Orchestration (Phases 0–3)
+- **Supervisor Agent**: LangGraph-powered intelligent intent routing with GPT-4o.
+- **Guarded SQL Agent**: Natural language to analytical SQL execution with rigorous AST query validation, table whitelist enforcement, read-only permissions, and query timeout guardrails.
+- **Audit Logging**: Comprehensive query execution logging (`agent_audit_logs`) tracking timestamp, agent name, SQL query text, row counts, and status.
+- **RAG Agent**: PDF document search and contextual question answering integrated with Pinecone vector database.
+- **Visualizer Agent**: Automatic chart configuration generation (Bar, Line, Pie, Area) rendered interactively via Recharts.
 
-### 📊 **Dynamic Data Visualization**
-- **4 Chart Types**: Bar, Line, Pie, Area
-- **Automatic Chart Selection**: LLM-powered analysis
-- **Interactive Recharts**: Real-time data rendering
+### 🗄️ Relational Business Database (Phase 4)
+- Normalized SQLite relational database covering 10 business tables:
+  - `customers`, `categories`, `products`, `orders`, `order_items`, `payments`, `inventory`, `marketing_campaigns`, `customer_interactions`, `support_tickets`.
+- Seed data generation script with strict referential integrity and business consistency (`backend/data/generate_business_data.py`).
+- Automated data validation suite (`backend/data/validate_business_data.py`).
 
-### 🔐 **Enterprise Features**
-- Real-time Analytics Dashboard
-- Query History & Audit Logging
-- User Settings Persistence
-- Background PDF Processing
-- Custom Agent Creation
-
----
-
-## 🏗️ Project Repositories
-
-This project consists of two independent microservices:
-
-### [📦 Backend ](https://github.com/MBilalKhanAI/DataScout-backend)
-FastAPI backend with LangGraph multi-agent system
-- Supervisor, SQL, RAG, and Visualizer agents
-- 15 API endpoints
-- Pinecone vector database integration
-
-**[View Backend Repository →](https://github.com/MBilalKhanAI/DataScout-backend)**
-
-### [🎨 Frontend](https://github.com/MBilalKhanAI/DataScout-frontend)
-Next.js 14 TypeScript frontend
-- Real-time chat interface
-- Analytics dashboard
-- Dynamic visualizations
-
-**[View Frontend Repository →](https://github.com/MBilalKhanAI/DataScout-frontend)**
+### 📈 Sales Forecasting & Evaluation Pipeline (Phases 6A & 6B)
+- **Chronological Data Preparation**: Calendar-complete daily sales aggregate over 731 days (2024-01-01 through 2025-12-31) with strict zero-fill gap handling (`backend/ml/prepare_sales_data.py`).
+- **Strict Chronological Partitions**:
+  - Training: `2024-01-01` to `2025-06-30` (547 days)
+  - Validation: `2025-07-01` to `2025-09-30` (92 days)
+  - Final Holdout Test: `2025-10-01` to `2025-12-31` (92 days)
+- **Feature Engineering & Leakage Isolation**: 20 temporal, lagged, and rolling features strictly restricted to prior observation windows with training-fitted scaling (`backend/ml/sales_features.py`).
+- **Pure-Python Architectures**: Zero-dependency implementations of Ridge Regression, Decision Trees, Random Forests, and Two-Stage Hurdle models (`backend/ml/sales_models.py`).
+- **Validation-Driven Model Selection**:
+  - The **Decision Tree** model was selected using validation MAE ($50,166.76 vs Historical Mean $53,391.21).
+- **Honest Test Evaluation & Baseline Comparison**:
+  - **No model outperforms every baseline across all metrics.**
+  - The Decision Tree's overall test MAE ($52,912.43) is slightly worse than the historical-mean baseline ($52,408.36, +1.0%), though on active trading dates it achieves lower error ($53,057.87 vs $55,570.98).
+  - The **Random Forest** achieved the lowest reported test RMSE ($77,154.64 vs baseline $82,450.83).
+  - Ridge Regression virtually eliminated systemic underprediction bias (+$546.52 vs baseline -$31,555.12).
+- **Verification & Test Coverage**: 25 automated unit and regression tests for data preparation and forecasting (`backend/tests/test_sales_data_preparation.py`, `backend/tests/test_sales_forecast.py`).
 
 ---
 
-## 🚀 Quick Start
+## 📁 Repository Structure
+
+```
+IntelliOps-AI/
+├── backend/                        # FastAPI Backend Application
+│   ├── agents/                     # LangGraph Agent Implementations
+│   │   ├── supervisor.py           # Multi-agent orchestrator
+│   │   ├── sql_agent.py            # Natural language SQL agent
+│   │   ├── sql_validator.py        # AST parsing & safety validation
+│   │   ├── sql_executor.py         # Read-only execution & timeout guard
+│   │   ├── rag_agent.py            # Document retrieval agent
+│   │   └── visualizer_agent.py     # Dynamic chart configuration
+│   ├── data/                       # Synthetic business data generators
+│   │   ├── generate_business_data.py
+│   │   └── validate_business_data.py
+│   ├── ml/                         # Sales forecasting pipeline
+│   │   ├── prepare_sales_data.py   # Calendar-complete data prep
+│   │   ├── sales_features.py       # Leak-free feature engineering & scaling
+│   │   ├── sales_models.py         # Pure-Python ML models & serialization
+│   │   ├── train_sales_forecast.py # Model training & validation selection
+│   │   └── evaluate_sales_forecast.py # Multi-metric evaluation engine
+│   ├── services/                   # Background services & PDF ingestion
+│   ├── tests/                      # 61 automated unit and integration tests
+│   ├── db_schema.py                # Relational schema DDL definitions
+│   ├── init_db.py                  # Database initialization script
+│   ├── main.py                     # FastAPI server entry point
+│   ├── requirements.txt            # Python dependencies
+│   └── .env.example                # Safe environment variable template
+│
+├── frontend/                       # Next.js 14 Web Application
+│   ├── src/
+│   │   ├── app/                    # Next.js App Router (Dashboard, Query, Settings)
+│   │   ├── components/             # React UI components & Recharts visualizations
+│   │   └── lib/                    # API clients and utilities
+│   ├── package.json                # Frontend dependencies
+│   └── .env.example                # Frontend environment template
+│
+├── docs/                           # Architecture and phase audit reports
+│   ├── ARCHITECTURE.md
+│   ├── DATABASE.md
+│   ├── SQL_AGENT.md
+│   ├── SALES_FORECASTING_DATA.md
+│   ├── SALES_FORECASTING_MODEL.md
+│   ├── PHASE_6A_REPORT.md
+│   ├── PHASE_6B_REPORT.md
+│   └── ...
+├── .gitignore                      # Monorepo ignore rules (secrets, venvs, DBs)
+└── README.md                       # Project documentation
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-
-- Python 3.11+
-- Node.js 18+
-- OpenAI API Key
-- Pinecone API Key
-
-### Installation
-
-```bash
-# Backend setup
-git clone https://github.com/MBilalKhanAI/DataScout-backend.git
-cd DataScout-backend
-python -m venv venv && venv\\Scripts\\activate
-pip install -r requirements.txt
-cp .env.example .env  # Add your API keys
-python init_db.py
-uvicorn main:app --reload
-
-# Frontend setup (new terminal)
-git clone https://github.com/MBilalKhanAI/DataScout-frontend.git
-cd DataScout-frontend
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-**Access:** http://localhost:3000
+- **Python**: 3.11 or 3.12
+- **Node.js**: 18+ and npm
+- **API Keys** *(Optional for core UI/DB execution; required for AI agents)*:
+  - OpenAI API Key (`OPENAI_API_KEY`)
+  - Pinecone API Key (`PINECONE_API_KEY`)
 
 ---
 
-## 📁 Project Structure
+### Backend Setup
 
-```
-DataScout/
-├── backend/                 # FastAPI Backend
-│   ├── agents/             # AI Agent Implementations
-│   │   ├── supervisor.py   # LangGraph Orchestrator
-│   │   ├── rag_agent.py    # Document Search
-│   │   ├── sql_agent.py    # SQL Query Agent
-│   │   └── visualizer_agent.py  # Chart Generator
-│   ├── services/           # Business Logic
-│   │   └── ingestion.py    # PDF Processing
-│   ├── tests/              # Test Suite
-│   ├── main.py             # FastAPI Application
-│   └── requirements.txt    # Python Dependencies
-│
-└── frontend/               # Next.js Frontend
-    ├── src/
-    │   ├── app/           # Pages & Routes
-    │   ├── components/    # React Components
-    │   └── lib/           # Utilities & API
-    └── package.json       # Node Dependencies
-```
+1. **Navigate to the backend directory**:
+   ```bash
+   cd backend
+   ```
 
----
+2. **Create and activate a virtual environment**:
+   ```bash
+   # Windows
+   python -m venv venv
+   venv\Scripts\activate
 
-## 🔧 Configuration
+   # Linux / macOS
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
-### Backend Environment Variables
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Create `backend/.env`:
+4. **Configure environment variables**:
+   ```bash
+   cp .env.example .env
+   ```
+   *Edit `.env` to provide your OpenAI and Pinecone API keys if testing agent generation.*
 
-```env
-# OpenAI Configuration
-OPENAI_API_KEY=sk-proj-...
+5. **Initialize database and seed business data**:
+   ```bash
+   python init_db.py
+   python -m data.generate_business_data
+   ```
 
-# Pinecone Configuration
-PINECONE_API_KEY=pcsk_...
-PINECONE_INDEX_NAME=datascout
-PINECONE_HOST=https://datascout-xxxxx.svc.aped-4627-b74a.pinecone.io
-
-# Optional: LangSmith Tracing
-LANGCHAIN_TRACING_V2=true
-LANGCHAIN_API_KEY=lsv2_pt_...
-LANGCHAIN_PROJECT=datascout-enterprise
-```
-
-### Frontend Environment Variables
-
-Create `frontend/.env.local`:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
+6. **Start the FastAPI backend server**:
+   ```bash
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   ```
+   *API Swagger documentation available at: `http://localhost:8000/docs`*
 
 ---
 
-## 📚 API Endpoints
+### Frontend Setup
 
-### Core Endpoints
+1. **Navigate to the frontend directory**:
+   ```bash
+   cd frontend
+   ```
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/chat` | POST | Main chat interface |
-| `/api/analytics/summary` | GET | Real-time metrics |
-| `/api/history` | GET | Query history |
-| `/api/settings` | GET/POST | User preferences |
-| `/api/documents/upload` | POST | PDF upload & ingestion |
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-See individual repositories for complete API documentation.
+3. **Configure environment variables**:
+   ```bash
+   cp .env.example .env.local
+   ```
+   *Defaults to `NEXT_PUBLIC_API_URL=http://localhost:8000`.*
 
----
-
-## 🏗️ Architecture
-
-### Agent Workflow
-
-```
-User Query → Supervisor Agent
-    ├─→ SQL Agent → Visualizer → Chart Response
-    ├─→ RAG Agent → Text Response
-    └─→ Clarify → Clarification Request
-```
-
-### Technology Stack
-
-**Backend:**
-- FastAPI - Modern Python web framework
-- LangChain - LLM application framework
-- LangGraph - Agent orchestration
-- Pinecone - Vector database
-- SQLite - Local database
-
-**Frontend:**
-- Next.js 14 - React framework
-- TypeScript - Type safety
-- Tailwind CSS - Styling
-- Recharts - Data visualization
-- Framer Motion - Animations
+4. **Start Next.js development server**:
+   ```bash
+   npm run dev
+   ```
+   *Open `http://localhost:3000` in your browser.*
 
 ---
 
 ## 🧪 Testing
 
-```bash
-# Run backend tests
-cd backend
-python -m pytest tests/ -v
+Run the full backend test suite (61 unit and integration tests):
 
-# Run specific test
-python tests/test_supervisor.py
+```bash
+cd backend
+python -m unittest discover -s tests -p "test_*.py"
 ```
 
-**Test Coverage:** 70%  
-**Test Files:** 8 comprehensive test suites
+To run sales data preparation and forecasting tests specifically:
+```bash
+python -m unittest tests/test_sales_data_preparation.py tests/test_sales_forecast.py
+```
 
 ---
 
-## 📖 Documentation
+## 🔒 Security & Safe Engineering
 
-- [Backend README](https://github.com/MBilalKhanAI/DataScout-backend#readme)
-- [Frontend README](https://github.com/MBilalKhanAI/DataScout-frontend#readme)
-- [Changelog](CHANGELOG.md)
-- [Release Notes](RELEASE_NOTES.md)
-
----
-
-## 🔒 Security
-
-- ✅ Environment variable validation
-- ✅ SQL injection prevention (parameterized queries)
-- ✅ Table-level access control
-- ✅ Audit logging for all queries
-- ✅ API key rotation support
-
----
-
-## 🚢 Deployment
-
-### Backend
-- Google Cloud Run
-- Railway
-- Render
-
-### Frontend
-- Vercel (recommended for Next.js)
-- Netlify
-- AWS Amplify
-
-See individual repository READMEs for deployment guides.
-
----
-
-## 📝 Release Notes
-
-### Version 1.0.0 (January 2026)
-
-**New Features:**
-- ✅ Multi-agent orchestration with LangGraph
-- ✅ Dynamic chart generation
-- ✅ Real-time analytics dashboard
-- ✅ Query history and audit logging
-- ✅ Settings persistence
-
-See [RELEASE_NOTES.md](RELEASE_NOTES.md) for complete details.
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- **No Secrets in Source Control**: All `.env` and `.env.local` files containing secrets or private credentials are strictly excluded via `.gitignore`.
+- **SQL AST Safety Validator**: Rejects destructive operations (`DROP`, `DELETE`, `UPDATE`, `INSERT`, `ALTER`), schema manipulations, and unauthorized tables before execution.
+- **Isolated SQLite Execution**: Enforces read-only query semantics with strict query timeout guardrails.
+- **Audit Trails**: Every SQL interaction is logged to `agent_audit_logs`.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
-
----
-
-## 🙏 Acknowledgments
-
-- OpenAI for GPT-4o
-- Pinecone for vector database
-- LangChain community
-- Next.js team
-
----
-
-## 📧 Contact
-
-- **Email:** khan.muhammadbilal654@gmail.com
-- **LinkedIn:** [Muhammad Bilal Khan](https://www.linkedin.com/in/muhammad-bilal-khan-885ai654)
-
----
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

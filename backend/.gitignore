@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test outputs
+test_results*.txt
+*_test_results.txt
+reports/*.json
+reports/*.html
+
+# Logs
+*.log
+logs/
+
+# ML Artifacts
+ml/artifacts/
+
+# Temp files
+*.tmp
+*.temp
+
+# Proprietary / Third-party / Personal PDFs (local only)
+reports/Machine_Learning_Dev_Ops_Assessment.pdf
+reports/make all the questions a little more lengthy in d....pdf
+
+# Legacy deployment workflows (isolated from automated production deployments)
+.github/workflows/
